@@ -1,0 +1,5 @@
+name: "AuthHook"
+version: "${version}"
+author: "RK_01 and Lenni0451"
+main: "net.raphimc.authhook.AuthHook"
+min-version: "3.2.1"
