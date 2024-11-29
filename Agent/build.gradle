@@ -1,0 +1,16 @@
+dependencies {
+    include "org.ow2.asm:asm:9.7.1"
+    include "org.ow2.asm:asm-tree:9.7.1"
+}
+
+jar {
+    manifest {
+        attributes(
+                "Multi-Release": "true",
+                "Premain-Class": "net.lenni0451.authhook.Agent",
+                "PreMain-Class": "net.lenni0451.authhook.Agent",
+                "Can-Redefine-Classes": "true",
+                "Can-Retransform-Classes": "true"
+        )
+    }
+}

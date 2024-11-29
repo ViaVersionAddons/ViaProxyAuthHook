@@ -1,26 +1,46 @@
-plugins {
-    id "java-library"
-    id "idea"
+allprojects {
+    apply plugin: "java"
+
+    base {
+        java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+        compileJava.options.encoding = compileTestJava.options.encoding = javadoc.options.encoding = "UTF-8"
+
+        group = project.maven_group ?: rootProject.maven_group
+        archivesName = project.maven_name ?: rootProject.maven_name
+        version = project.maven_version ?: rootProject.maven_version
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    configurations {
+        include
+
+        implementation.extendsFrom include
+        api.extendsFrom include
+    }
+
+    jar {
+        dependsOn configurations.include
+        from {
+            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+            configurations.include.collect {
+                zipTree(it)
+            }
+        } {
+            exclude "META-INF/*.RSA", "META-INF/*.SF", "META-INF/*.DSA"
+        }
+
+        from("LICENSE") {
+            rename { "${it}_${project.name ?: rootProject.name}" }
+        }
+    }
 }
 
-base {
-    java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-    compileJava.options.encoding = compileTestJava.options.encoding = javadoc.options.encoding = "UTF-8"
-
-    group = project.maven_group ?: rootProject.maven_group
-    archivesName = project.maven_name ?: rootProject.maven_name
-    version = project.maven_version ?: rootProject.maven_version
-}
-
-configurations {
-    include
-
-    implementation.extendsFrom include
-    api.extendsFrom include
-}
+apply plugin: "idea"
 
 repositories {
-    mavenCentral()
     maven {
         name = "ViaVersion"
         url = "https://repo.viaversion.com"
@@ -36,22 +56,6 @@ processResources {
 
     filesMatching("viaproxy.yml") {
         expand "version": project.version
-    }
-}
-
-jar {
-    dependsOn configurations.include
-    from {
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        configurations.include.collect {
-            zipTree(it)
-        }
-    } {
-        exclude "META-INF/*.RSA", "META-INF/*.SF", "META-INF/*.DSA"
-    }
-
-    from("LICENSE") {
-        rename { "${it}_${project.name ?: rootProject.name}" }
     }
 }
 
