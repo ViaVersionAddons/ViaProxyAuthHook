@@ -18,8 +18,13 @@ jobs:
           check-latest: true
       - name: Build with Gradle
         run: ./gradlew build
-      - name: Upload Artifacts to GitHub
+      - name: Upload ViaProxy plugin to GitHub
         uses: actions/upload-artifact@v4
         with:
-          name: Artifacts
+          name: AuthHook ViaProxy
           path: build/libs/
+      - name: Upload AuthHook agent to GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: AuthHook server agent
+          path: Agent/build/libs/
