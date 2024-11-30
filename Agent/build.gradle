@@ -1,3 +1,7 @@
+plugins {
+    id("com.gradleup.shadow") version "9.0.0-beta2"
+}
+
 base {
     java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 }
@@ -8,6 +12,8 @@ dependencies {
 }
 
 jar {
+    enabled = false
+    dependsOn(shadowJar)
     manifest {
         attributes(
                 "Multi-Release": "true",
@@ -17,4 +23,9 @@ jar {
                 "Can-Retransform-Classes": "true"
         )
     }
+}
+
+shadowJar {
+    relocate "org.objectweb", "net.lenni0451.authhook.libs.org.objectweb"
+    archiveClassifier = ""
 }
