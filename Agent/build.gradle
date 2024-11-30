@@ -1,3 +1,7 @@
+base {
+    java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+}
+
 dependencies {
     include "org.ow2.asm:asm:9.7.1"
     include "org.ow2.asm:asm-tree:9.7.1"
