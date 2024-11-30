@@ -6,6 +6,8 @@ This plugin works by redirecting the authentication requests from the server to 
 ViaProxy then checks if the client is authenticated with ViaProxy and sends the result back to the server.
 Clients which are not authenticated with ViaProxy will be authenticated with the official Mojang authentication servers.
 
+The modification has been confirmed to work on Vanilla, Spigot, Paper, Fabric, Forge and BungeeCord.
+
 ## Installation
 1. Download the latest version from [GitHub Actions](https://github.com/ViaVersionAddons/ViaProxyAuthHook/actions).
 2. Put the jar file into the plugins folder of ViaProxy
