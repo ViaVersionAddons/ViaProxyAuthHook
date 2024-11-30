@@ -38,7 +38,9 @@ public class URLRedirector implements ClassFileTransformer {
             boolean modified = false;
             for (MethodNode method : node.methods) {
                 for (AbstractInsnNode insn : method.instructions) {
-                    if (insn instanceof LdcInsnNode ldc && ldc.cst instanceof String str) {
+                    if (insn instanceof LdcInsnNode && ((LdcInsnNode) insn).cst instanceof String) {
+                        LdcInsnNode ldc = (LdcInsnNode) insn;
+                        String str = (String) ldc.cst;
                         if (str.startsWith(URL)) {
                             str = str.substring(URL.length());
                             str = this.targetAddress + "/" + this.secretKey + str;
