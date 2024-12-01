@@ -34,6 +34,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class AuthHookHttpServer {
@@ -41,6 +43,7 @@ public class AuthHookHttpServer {
     private final InetSocketAddress bindAddress;
     private final ChannelFuture channelFuture;
     private final Map<String, ProxyConnection> pendingConnections = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).<String, ProxyConnection>build().asMap();
+    private final HttpClient httpClient = HttpClient.newBuilder().executor(Executors.newCachedThreadPool()).build();
 
     public AuthHookHttpServer(final InetSocketAddress bindAddress) {
         this.bindAddress = bindAddress;
@@ -100,7 +103,6 @@ public class AuthHookHttpServer {
                                         }
                                     }
 
-                                    final HttpClient httpClient = HttpClient.newHttpClient();
                                     httpClient.sendAsync(java.net.http.HttpRequest.newBuilder().uri(URI.create("https://sessionserver.mojang.com" + uri)).build(), java.net.http.HttpResponse.BodyHandlers.ofByteArray())
                                             .thenAccept(response -> {
                                                 final FullHttpResponse fullHttpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(response.statusCode()), ctx.alloc().buffer());
@@ -136,6 +138,13 @@ public class AuthHookHttpServer {
     public void stop() {
         if (this.channelFuture != null) {
             this.channelFuture.channel().close();
+        }
+        this.httpClient.executor().map(ExecutorService.class::cast).ifPresent(ExecutorService::shutdown);
+        if (this.httpClient instanceof AutoCloseable closeable) {
+            try {
+                closeable.close();
+            } catch (Exception ignored) {
+            }
         }
     }
 
