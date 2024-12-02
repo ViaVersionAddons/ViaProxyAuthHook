@@ -15,7 +15,7 @@ public class Config {
 
     private static Map<String, String> getDefaults() {
         Map<String, String> def = new LinkedHashMap<>();
-        def.put(TARGET_ADDRESS, "http://localhost");
+        def.put(TARGET_ADDRESS, "http://localhost:8080");
         def.put(SECRET_KEY, "paste secret key from ViaProxy here");
         return def;
     }
