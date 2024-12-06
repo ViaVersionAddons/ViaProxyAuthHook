@@ -13,7 +13,7 @@ Bukkit, Spigot, Paper, BungeeCord
 and Sponge
 
 ## Installation
-1. Download the latest version from [GitHub Actions](https://github.com/ViaVersionAddons/ViaProxyAuthHook/actions/workflows/build.yml).
+1. Download the latest stable release from [GitHub Releases](https://github.com/ViaVersionAddons/ViaProxyAuthHook/releases/latest) or the latest dev build from [GitHub Actions](https://github.com/ViaVersionAddons/ViaProxyAuthHook/actions/workflows/build.yml).
 2. Put the jar file into the plugins folder of ViaProxy
 3. Run ViaProxy once to generate the config file
 4. Make sure to enable "Proxy Online Mode" in the ViaProxy CLI or config file
