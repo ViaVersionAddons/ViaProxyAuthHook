@@ -83,9 +83,9 @@ public class AuthHookHttpServer {
                                                     gameProfile.getProperties().forEach((key, value) -> {
                                                         final JsonObject propertyObj = new JsonObject();
                                                         propertyObj.addProperty("name", key);
-                                                        propertyObj.addProperty("value", value.getValue());
+                                                        propertyObj.addProperty("value", value.value());
                                                         if (value.hasSignature()) {
-                                                            propertyObj.addProperty("signature", value.getSignature());
+                                                            propertyObj.addProperty("signature", value.signature());
                                                         }
                                                         propertiesArray.add(propertyObj);
                                                     });
