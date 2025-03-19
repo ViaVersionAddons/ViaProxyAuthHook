@@ -1,5 +1,5 @@
 plugins {
-    id("com.gradleup.shadow") version "9.0.0-beta11"
+    id("net.lenni0451.repackager") version "1.0.0"
 }
 
 base {
@@ -12,8 +12,6 @@ dependencies {
 }
 
 jar {
-    enabled = false
-    dependsOn(shadowJar)
     manifest {
         attributes(
                 "Multi-Release": "true",
@@ -25,7 +23,10 @@ jar {
     }
 }
 
-shadowJar {
-    relocate "org.objectweb", "net.lenni0451.authhook.libs.org.objectweb"
-    archiveClassifier = ""
+repackager {
+    jarFile = jar.archiveFile
+    relocations = [
+            "org.objectweb": "net.lenni0451.authhook.libs.org.objectweb"
+    ]
+    removeEmptyDirs = true
 }
