@@ -48,7 +48,7 @@ repositories {
 }
 
 dependencies {
-    implementation "net.raphimc:ViaProxy:3.4.0-SNAPSHOT"
+    implementation "net.raphimc:ViaProxy:3.4.1-SNAPSHOT"
 }
 
 processResources {
