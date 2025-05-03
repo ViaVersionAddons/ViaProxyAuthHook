@@ -1,9 +1,8 @@
 plugins {
-    id("net.lenni0451.repackager") version "1.0.0"
-}
-
-base {
-    java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+    id "java"
+    id "base.base-conventions"
+    id "base.application-conventions"
+    id "net.lenni0451.repackager" version "1.0.0"
 }
 
 dependencies {
@@ -14,7 +13,6 @@ dependencies {
 jar {
     manifest {
         attributes(
-                "Multi-Release": "true",
                 "Premain-Class": "net.lenni0451.authhook.Agent",
                 "PreMain-Class": "net.lenni0451.authhook.Agent",
                 "Can-Redefine-Classes": "true",
