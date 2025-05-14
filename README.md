@@ -20,7 +20,7 @@ and Sponge
 5. Copy the secret key from the AuthHook config file (You will need it later for the server)
 6. Download the latest version of the AuthHook agent (Same link as step 1)
 7. Put the AuthHook agent into the same folder as the server jar
-8. Add the following JVM argument to the server start command: `-javaagent:ViaProxyAuthHook-x.x.x.jar` (Replace x.x.x with the version of the AuthHook agent you downloaded)
+8. Add the following JVM argument to the server start command: `-javaagent:ViaProxyAuthHook-Agent-x.x.x.jar` (Replace x.x.x with the version of the AuthHook agent you downloaded)
 9. Start the server once to generate the config file
 10. Open the config file (It's in the same folder as the server jar) and set the secret key to the key you copied in step 4
 11. Start both the server and ViaProxy. You can now switch the authentication mode to AuthHook (Use `AUTH_HOOK` for CLI or config file).
