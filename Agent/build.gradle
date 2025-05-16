@@ -2,7 +2,7 @@ plugins {
     id "java"
     id "base.base-conventions"
     id "base.application-conventions"
-    id "net.lenni0451.repackager" version "1.0.1"
+    id "net.lenni0451.repackager" version "1.0.2"
 }
 
 dependencies {
