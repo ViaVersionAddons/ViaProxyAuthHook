@@ -6,8 +6,8 @@ plugins {
 }
 
 dependencies {
-    includeInJar "org.ow2.asm:asm:9.8"
-    includeInJar "org.ow2.asm:asm-tree:9.8"
+    includeInJar "org.ow2.asm:asm:9.9"
+    includeInJar "org.ow2.asm:asm-tree:9.9"
 }
 
 jar {
