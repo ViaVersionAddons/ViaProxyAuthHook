@@ -27,6 +27,7 @@ import net.raphimc.viaproxy.plugins.events.JoinServerRequestEvent;
 import net.raphimc.viaproxy.plugins.events.ViaProxyLoadedEvent;
 import net.raphimc.viaproxy.protocoltranslator.viaproxy.ViaProxyConfig;
 import net.raphimc.viaproxy.ui.I18n;
+import net.raphimc.viaproxy.util.AddressUtil;
 import net.raphimc.viaproxy.util.logging.Logger;
 
 import java.net.InetSocketAddress;
@@ -44,7 +45,7 @@ public class AuthHook extends ViaProxyPlugin {
         AuthHookConfig.load(this.getDataFolder());
 
         this.authHookHttpServer = new AuthHookHttpServer((InetSocketAddress) AuthHookConfig.bindAddress);
-        Logger.LOGGER.info("AuthHook is listening on http://" + AuthHookConfig.bindAddress);
+        Logger.LOGGER.info("AuthHook is listening on http://" + AddressUtil.toString(AuthHookConfig.bindAddress));
 
         AUTH_HOOK = Enums.newInstance(ViaProxyConfig.AuthMethod.class, "AUTH_HOOK", ViaProxyConfig.AuthMethod.values().length, new Class[]{String.class}, new Object[]{"authhook.auth_method.name"});
         Enums.addEnumInstance(ViaProxyConfig.AuthMethod.class, AUTH_HOOK);
