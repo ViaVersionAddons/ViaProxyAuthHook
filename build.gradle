@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation("net.raphimc:ViaProxy:3.4.8") {
+    implementation("net.raphimc:ViaProxy:3.4.9") {
         transitive = false
     }
 }
