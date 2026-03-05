@@ -2,7 +2,7 @@ plugins {
     id "java"
     id "base.base-conventions"
     id "base.application-conventions"
-    id "net.lenni0451.repackager" version "1.0.2"
+    id "net.lenni0451.jar-transformer" version "1.1.0"
 }
 
 dependencies {
@@ -21,10 +21,19 @@ jar {
     }
 }
 
-repackager {
-    jarFile = jar.archiveFile
-    relocations = [
-            "org.objectweb": "net.lenni0451.authhook.libs.org.objectweb"
-    ]
-    removeEmptyDirs = true
+jarTransformer {
+    jar {
+        inputFile = jar.archiveFile
+        exclude {
+            excludes = [
+                    "module-info.class"
+            ]
+        }
+        repackage {
+            relocations = [
+                    "org.objectweb": "net.lenni0451.authhook.libs.org.objectweb"
+            ]
+            removeEmptyDirs = true
+        }
+    }
 }
