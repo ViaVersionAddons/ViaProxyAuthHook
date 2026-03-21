@@ -29,4 +29,4 @@ and Sponge
 If you encounter any issues, please report them on the
 [issue tracker](https://github.com/ViaVersionAddons/ViaProxyAuthHook/issues).  
 If you just want to talk or need help using ViaProxyAuthHook feel free to join my
-[Discord](https://discord.gg/dCzT9XHEWu).
+[Discord](https://raphimc.net/discord).
