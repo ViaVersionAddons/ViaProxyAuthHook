@@ -9,8 +9,9 @@ Clients which are not authenticated with ViaProxy will be authenticated with the
 The server modification has been confirmed to work on
 Vanilla,
 Fabric, Forge,
-Bukkit, Spigot, Paper, BungeeCord
-and Sponge
+Bukkit, Spigot, Paper,
+BungeeCord,
+Sponge and Minestom.
 
 ## Installation
 1. Download the latest stable release from [GitHub Releases](https://github.com/ViaVersionAddons/ViaProxyAuthHook/releases/latest) or the latest dev build from [GitHub Actions](https://github.com/ViaVersionAddons/ViaProxyAuthHook/actions/workflows/build.yml).
