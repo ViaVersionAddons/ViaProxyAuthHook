@@ -18,7 +18,11 @@
 package net.raphimc.authhook.config;
 
 import net.lenni0451.optconfig.ConfigLoader;
-import net.lenni0451.optconfig.annotations.*;
+import net.lenni0451.optconfig.annotations.Description;
+import net.lenni0451.optconfig.annotations.NotReloadable;
+import net.lenni0451.optconfig.annotations.OptConfig;
+import net.lenni0451.optconfig.annotations.Option;
+import net.lenni0451.optconfig.annotations.TypeSerializer;
 import net.lenni0451.optconfig.provider.ConfigProvider;
 import net.raphimc.viaproxy.util.AddressUtil;
 import net.raphimc.viaproxy.util.logging.Logger;
@@ -28,7 +32,8 @@ import java.net.SocketAddress;
 import java.util.UUID;
 
 @OptConfig
-public class AuthHookConfig {
+@SuppressWarnings("checkstyle:VisibilityModifier")
+public final class AuthHookConfig {
 
     @Option("secret-key")
     @Description("The secret key used to verify the servers. Paste this key into the auth_hook.properties config file on your server.")
@@ -36,16 +41,19 @@ public class AuthHookConfig {
 
     @NotReloadable
     @Option("bind-address")
-    @Description({"The address AuthHook should listen for HTTP requests."})
+    @Description("The address AuthHook should listen for HTTP requests.")
     @TypeSerializer(SocketAddressTypeSerializer.class)
     public static SocketAddress bindAddress = AddressUtil.parse("127.0.0.1:8080", null);
+
+    private AuthHookConfig() {
+    }
 
     public static void load(final File dataFolder) {
         try {
             final ConfigLoader<AuthHookConfig> configLoader = new ConfigLoader<>(AuthHookConfig.class);
             configLoader.getConfigOptions().setResetInvalidOptions(true);
             configLoader.loadStatic(ConfigProvider.file(new File(dataFolder, "auth_hook.yml")));
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             Logger.LOGGER.error("Failed to load the AuthHook configuration!", t);
             System.exit(-1);
         }

@@ -52,7 +52,7 @@ public class AuthHook extends ViaProxyPlugin {
     }
 
     @EventHandler
-    private void onViaProxyLoaded(ViaProxyLoadedEvent event) {
+    private void onViaProxyLoaded(final ViaProxyLoadedEvent event) {
         if (!ViaProxy.getConfig().isProxyOnlineMode()) {
             Logger.LOGGER.error("Proxy online mode is disabled, please enable it to use the AuthHook plugin!");
             Logger.LOGGER.error("Without online mode the AuthHook plugin would be effectively useless");
@@ -65,7 +65,7 @@ public class AuthHook extends ViaProxyPlugin {
     }
 
     @EventHandler
-    private void onJoinServerRequest(JoinServerRequestEvent event) {
+    private void onJoinServerRequest(final JoinServerRequestEvent event) {
         if (ViaProxy.getConfig().getAuthMethod() == AUTH_HOOK) {
             this.authHookHttpServer.addPendingConnection(event.getServerIdHash(), event.getProxyConnection());
             event.setCancelled(true);

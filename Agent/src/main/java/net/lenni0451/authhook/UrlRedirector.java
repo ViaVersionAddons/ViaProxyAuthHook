@@ -28,35 +28,37 @@ import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
 import java.util.Map;
 
-public class URLRedirector implements ClassFileTransformer {
+public class UrlRedirector implements ClassFileTransformer {
 
     private static final String URL = "https://sessionserver.mojang.com";
 
     private final String targetAddress;
     private final String secretKey;
 
-    public URLRedirector(final Map<String, String> config) {
-        this.targetAddress = this.formatURL(config.get(Config.TARGET_ADDRESS));
+    public UrlRedirector(final Map<String, String> config) {
+        this.targetAddress = this.formatUrl(config.get(Config.TARGET_ADDRESS));
         this.secretKey = config.get(Config.SECRET_KEY);
     }
 
-    private String formatURL(String url) {
+    private String formatUrl(String url) {
         if (!url.startsWith("http://") && !url.startsWith("https://")) {
             throw new IllegalArgumentException("Invalid URL (missing protocol): " + url);
         }
-        while (url.endsWith("/")) url = url.substring(0, url.length() - 1);
+        while (url.endsWith("/")) {
+            url = url.substring(0, url.length() - 1);
+        }
         return url;
     }
 
     @Override
-    public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
+    public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final byte[] classfileBuffer) {
         try {
-            ClassNode node = this.read(classfileBuffer);
+            final ClassNode node = this.read(classfileBuffer);
             boolean modified = false;
             for (MethodNode method : node.methods) {
                 for (AbstractInsnNode insn : method.instructions) {
                     if (insn instanceof LdcInsnNode && ((LdcInsnNode) insn).cst instanceof String) {
-                        LdcInsnNode ldc = (LdcInsnNode) insn;
+                        final LdcInsnNode ldc = (LdcInsnNode) insn;
                         String str = (String) ldc.cst;
                         if (str.startsWith(URL)) {
                             str = str.substring(URL.length());
@@ -70,20 +72,20 @@ public class URLRedirector implements ClassFileTransformer {
                 }
             }
             return modified ? this.write(node) : null;
-        } catch (Throwable ignored) {
+        } catch (final Throwable ignored) {
         }
         return null;
     }
 
     private ClassNode read(final byte[] bytes) {
-        ClassNode node = new ClassNode();
-        ClassReader reader = new ClassReader(bytes);
+        final ClassNode node = new ClassNode();
+        final ClassReader reader = new ClassReader(bytes);
         reader.accept(node, ClassReader.EXPAND_FRAMES);
         return node;
     }
 
     private byte[] write(final ClassNode node) {
-        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        final ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         node.accept(writer);
         return writer.toByteArray();
     }

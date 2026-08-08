@@ -1,6 +1,7 @@
 plugins {
     id "java"
     id "base.base-conventions"
+    id "base.checkstyle"
     id "base.application-conventions"
     id "net.lenni0451.jar-transformer" version "1.1.0"
 }
