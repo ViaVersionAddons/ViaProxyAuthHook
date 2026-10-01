@@ -21,16 +21,24 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.LdcInsnNode;
+import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
 import java.util.Map;
 
+import static org.objectweb.asm.Opcodes.ARETURN;
+import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
+
 public class UrlRedirector implements ClassFileTransformer {
 
     private static final String URL = "https://sessionserver.mojang.com";
+
+    private static final String DISCOVERY_SERVICE_CLASS = "MinecraftServicesDiscoveryService";
+    private static final String GET_URL_METHOD = "getUrl";
 
     private final String targetAddress;
     private final String secretKey;
@@ -52,9 +60,11 @@ public class UrlRedirector implements ClassFileTransformer {
 
     @Override
     public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final byte[] classfileBuffer) {
+        final boolean isDiscoveryService = className != null && className.endsWith(DISCOVERY_SERVICE_CLASS);
         try {
             final ClassNode node = this.read(classfileBuffer);
             boolean modified = false;
+
             for (MethodNode method : node.methods) {
                 for (AbstractInsnNode insn : method.instructions) {
                     if (insn instanceof LdcInsnNode && ((LdcInsnNode) insn).cst instanceof String) {
@@ -71,10 +81,57 @@ public class UrlRedirector implements ClassFileTransformer {
                     }
                 }
             }
+
+            if (isDiscoveryService) {
+                modified |= this.patchDiscoveryService(node);
+            }
+
             return modified ? this.write(node) : null;
-        } catch (final Throwable ignored) {
+        } catch (final Throwable t) {
+            if (isDiscoveryService) {
+                System.err.println("Failed to transform '" + className + "'");
+                t.printStackTrace();
+            }
         }
         return null;
+    }
+
+    private boolean patchDiscoveryService(final ClassNode node) {
+        final String replacement = this.targetAddress + "/" + this.secretKey;
+        boolean modified = false;
+
+        for (MethodNode method : node.methods) {
+            if (!GET_URL_METHOD.equals(method.name)) {
+                continue;
+            }
+            if (!method.desc.endsWith(")Ljava/lang/String;")) {
+                continue;
+            }
+
+            boolean methodModified = false;
+            for (AbstractInsnNode insn : method.instructions) {
+                if (insn.getOpcode() == ARETURN) {
+                    final InsnList inject = new InsnList();
+                    inject.add(new LdcInsnNode(URL));
+                    inject.add(new LdcInsnNode(replacement));
+                    inject.add(new MethodInsnNode(
+                        INVOKEVIRTUAL,
+                        "java/lang/String",
+                        "replace",
+                        "(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;",
+                        false
+                    ));
+                    method.instructions.insertBefore(insn, inject);
+                    methodModified = true;
+                }
+            }
+
+            if (methodModified) {
+                modified = true;
+                System.out.println("Patched discovery getUrl in class '" + node.name + "' method '" + method.name + method.desc + "'");
+            }
+        }
+        return modified;
     }
 
     private ClassNode read(final byte[] bytes) {
