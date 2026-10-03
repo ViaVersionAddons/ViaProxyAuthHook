@@ -17,6 +17,7 @@
  */
 package net.raphimc.authhook.httpserver.model;
 
+import io.netty.buffer.ByteBufUtil;
 import io.netty.handler.codec.http.FullHttpResponse;
 import net.lenni0451.commons.httpclient.constants.HttpHeaders;
 import net.raphimc.authhook.httpserver.handler.RedirectedHostHandler;
@@ -30,11 +31,7 @@ public record ForwardedResponse(RedirectedHostHandler handler, String requestHos
     }
 
     public byte[] getContent() {
-        this.response.content().markReaderIndex();
-        final byte[] rawContent = new byte[this.response.content().readableBytes()];
-        this.response.content().readBytes(rawContent);
-        this.response.content().resetReaderIndex();
-        return rawContent;
+        return ByteBufUtil.getBytes(this.response.content());
     }
 
     public void setContent(final byte[] content) {
