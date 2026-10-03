@@ -25,12 +25,14 @@ import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import java.lang.instrument.ClassFileTransformer;
+import java.nio.charset.StandardCharsets;
 import java.security.ProtectionDomain;
+import java.util.Base64;
 import java.util.Map;
 
 public class UrlRedirector implements ClassFileTransformer {
 
-    private static final String URL = "https://sessionserver.mojang.com";
+    private static final String[] URLS = {"https://sessionserver.mojang.com", "https://discovery.minecraftservices.com"};
 
     private final String targetAddress;
     private final String secretKey;
@@ -60,13 +62,16 @@ public class UrlRedirector implements ClassFileTransformer {
                     if (insn instanceof LdcInsnNode && ((LdcInsnNode) insn).cst instanceof String) {
                         final LdcInsnNode ldc = (LdcInsnNode) insn;
                         String str = (String) ldc.cst;
-                        if (str.startsWith(URL)) {
-                            str = str.substring(URL.length());
-                            str = this.targetAddress + "/" + this.secretKey + str;
-                            ldc.cst = str;
+                        for (String url : URLS) {
+                            if (str.startsWith(url)) {
+                                str = str.substring(url.length());
+                                str = this.targetAddress + "/" + this.secretKey + "/" + Base64.getUrlEncoder().encodeToString(url.getBytes(StandardCharsets.UTF_8)) + str;
+                                ldc.cst = str;
 
-                            modified = true;
-                            System.out.println("Redirected Auth URL in class '" + node.name + "' method '" + method.name + "'");
+                                modified = true;
+                                System.out.println("Redirected '" + url + "' in class '" + node.name + "' method '" + method.name + "'");
+                                break;
+                            }
                         }
                     }
                 }
