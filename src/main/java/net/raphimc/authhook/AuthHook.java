@@ -55,10 +55,10 @@ public class AuthHook extends ViaProxyPlugin {
     @EventHandler
     private void onViaProxyLoaded(final ViaProxyLoadedEvent event) {
         if (!ViaProxy.getConfig().isProxyOnlineMode()) {
-            Logger.LOGGER.error("Proxy online mode is disabled, please enable it to use the AuthHook plugin!");
-            Logger.LOGGER.error("Without online mode the AuthHook plugin would be effectively useless");
-            Logger.LOGGER.error("Shutting down...");
-            System.exit(0);
+            Logger.LOGGER.warn("Proxy online mode is disabled, please enable it to use the AuthHook plugin!");
+            Logger.LOGGER.warn("Without online mode the AuthHook plugin would be effectively useless and allow anyone to connect to your server without authentication.");
+            Logger.LOGGER.info("Force enabling online mode");
+            ViaProxy.getConfig().setProxyOnlineMode(true);
         }
 
         final Map<String, Properties> locales = RStream.of(I18n.class).fields().by("LOCALES").get();
