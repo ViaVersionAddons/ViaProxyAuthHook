@@ -21,6 +21,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.InvokeDynamicInsnNode;
 import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
@@ -59,21 +60,33 @@ public class UrlRedirector implements ClassFileTransformer {
             boolean modified = false;
             for (MethodNode method : node.methods) {
                 for (AbstractInsnNode insn : method.instructions) {
+                    String str = null;
                     if (insn instanceof LdcInsnNode && ((LdcInsnNode) insn).cst instanceof String) {
-                        final LdcInsnNode ldc = (LdcInsnNode) insn;
-                        String str = (String) ldc.cst;
-                        for (String url : URLS) {
-                            if (str.startsWith(url)) {
-                                str = str.substring(url.length());
-                                str = this.targetAddress + "/" + this.secretKey + "/" + Base64.getUrlEncoder().encodeToString(url.getBytes(StandardCharsets.UTF_8)) + str;
-                                ldc.cst = str;
+                        str = (String) ((LdcInsnNode) insn).cst;
+                    } else if (insn instanceof InvokeDynamicInsnNode) {
+                        final InvokeDynamicInsnNode indy = (InvokeDynamicInsnNode) insn;
 
-                                modified = true;
-                                System.out.println("Redirected '" + url + "' in class '" + node.name + "' method '" + method.name + "'");
-                                break;
-                            }
+                        if (indy.bsm.getOwner().equals("java/lang/invoke/StringConcatFactory")
+                            && indy.bsm.getName().equals("makeConcatWithConstants")
+                            && indy.bsmArgs.length > 0
+                            && indy.bsmArgs[0] instanceof String) {
+                            str = (String) indy.bsmArgs[0];
                         }
                     }
+
+                    if (str == null) continue;
+
+                    final String redirected = this.redirectUrl(str);
+                    if (redirected == null) continue;
+
+                    if (insn instanceof LdcInsnNode) {
+                        ((LdcInsnNode) insn).cst = redirected;
+                    } else {
+                        ((InvokeDynamicInsnNode) insn).bsmArgs[0] = redirected;
+                    }
+
+                    modified = true;
+                    System.out.println("Redirected URL in class '" + node.name + "' method '" + method.name + "'");
                 }
             }
             return modified ? this.write(node) : null;
@@ -93,6 +106,17 @@ public class UrlRedirector implements ClassFileTransformer {
         final ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         node.accept(writer);
         return writer.toByteArray();
+    }
+
+    private String redirectUrl(final String str) {
+        for (String url : URLS) {
+            if (str.startsWith(url)) {
+                return this.targetAddress + "/" + this.secretKey + "/"
+                    + Base64.getUrlEncoder().encodeToString(url.getBytes(StandardCharsets.UTF_8))
+                    + str.substring(url.length());
+            }
+        }
+        return null;
     }
 
 }
